@@ -3,3 +3,4 @@ agents.lock
 .agents/.gitignore
 
 node_modules/
+.amp/portals/*

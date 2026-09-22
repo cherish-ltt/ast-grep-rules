@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+TIMEFORMAT='Completed in %3R seconds'
+
+# Node.js, npm, and uv are provided by the orb base image. Let npm enforce
+# package.json's supported Node.js versions rather than installing another runtime.
+echo 'Checking the orb toolchain'
+node --version
+npm --version
+uv --version
+
+if ! command -v just >/dev/null 2>&1; then
+  echo 'Installing just'
+  time curl --proto '=https' --tlsv1.2 -fsSL https://just.systems/install.sh |
+    sudo bash -s -- --to /usr/local/bin
+fi
+just --version
+
+echo 'Installing locked npm dependencies'
+time npm ci --engine-strict --prefer-offline --no-audit --no-fund
+
+# Prepare the environments without installing a Git hook. Both uv and prek
+# reuse these caches when setup runs again on a stale snapshot.
+echo 'Preparing the prek and Zizmor lint environment'
+time uvx prek install-hooks

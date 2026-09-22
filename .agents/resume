@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This repository has no authentication or services to repair on wake.
+# Toolchains, dependencies, and lint caches persist in the orb snapshot.
